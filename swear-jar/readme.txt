@@ -1,0 +1,2 @@
+No more opening a file rife with vulgarity. Swear jar will tell you how many swear words are in a file and, at your request, offer to display a censored version of the file.
+Usage: python swear.py [filepath/filename.txt]
