@@ -1,6 +1,8 @@
 import sys
 import os
 import subprocess
+import string
+import platform
 
 def censor(file):
     swears = ["shit", "piss", "fuck", "cunt","dick","pussy", "damn", "cocksucker", "motherfucker", "tits", "twat", "bitch", "ass", "faggot", "fag", "dyke", "cock", "asshole", "whore", "fucking", "fucker", "fuckin", "sgsrgdg"]
@@ -11,7 +13,7 @@ def censor(file):
             for line in input: 
                 for word in line.split():
                     for i in range(length):
-                        if word == swears[i]:
+                        if word.lower().strip(string.punctuation) == swears[i]:
                             curse = list(word)
                             for j in range(len(curse)):
                                 if j <= 1:
@@ -29,7 +31,12 @@ def censor(file):
             print(output.read())                    
     input.close()
     output.close()
-    subprocess.call(["xdg-open", "censor.txt"])
+    if platform.system() == 'Darwin':       # macOS
+        subprocess.call(('open', "censor.txt"))
+    elif platform.system() == 'Windows':    # Windows
+        os.startfile("censor.txt")
+    else:                                   # linux variants
+        subprocess.call(('xdg-open', "censor.txt"))
 
 def main():
 
@@ -41,7 +48,7 @@ def main():
     for line in f: 
         for word in line.split():
             for i in range(len(swears)):
-                if word == swears[i]:
+                if word.lower().strip(string.punctuation) == swears[i]:
                     count += 1
                     i += 1
                 else:
