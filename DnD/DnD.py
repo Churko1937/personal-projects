@@ -13,29 +13,47 @@ class PC:
 		pc.HP = HP
 		pc.exp = exp
 		
-class enemy:
+class weak_enemy:
 	options = []
-	def __init__(enemy, type, hp, exp, ac, weapon, bonus):
-		enemy.type = type
-		enemy.hp = hp
-		enemy.exp = exp
-		enemy.ac = ac
-		enemy.weapon = weapon
-		enemy.bonus = bonus
-		__class__.options.append(enemy)
+	def __init__(weak_enemy, type, hp, exp, ac, weapon, bonus):
+		weak_enemy.type = type
+		weak_enemy.hp = hp
+		weak_enemy.exp = exp
+		weak_enemy.ac = ac
+		weak_enemy.weapon = weapon
+		weak_enemy.bonus = bonus
+		__class__.options.append(weak_enemy)
+
+class mid_enemy:
+	options = []
+	def __init__(mid_enemy, type, hp, exp, ac, weapon, bonus):
+		mid_enemy.type = type
+		mid_enemy.hp = hp
+		mid_enemy.exp = exp
+		mid_enemy.ac = ac
+		mid_enemy.weapon = weapon
+		mid_enemy.bonus = bonus
+		__class__.options.append(mid_enemy)
+
+
 		
-Orc = enemy("Orc", 10, 50, 8, 10, 1)
-Arch_Mage = enemy("Arch Mage", 99, 8400, 9 , 15, 3)
-Bugbear = enemy("Bugbear", 38, 450, 13, 10, 2)
-Chimera = enemy("Chimera", 104, 1800, 14, 15, 3)
-Crab = enemy("Crab", 32, 200, 7, 9, 0)
-Dragon = enemy("Dragon", 406, 120000, 17, 16, 3)
-Dire_Wolf = enemy("Dire Wolf", 150, 2900, 10, 10, 2)
-Drider = enemy("Drider", 123, 2300, 10, 9, 1)
-Faerie = enemy("Faerie", 10, 100, 5, 8, 1)
-Frost_Giant = enemy("Frost Giant", 138, 3900, 15, 13, 3)
-Great_Ogre = enemy("Great Ogre", 73, 1100, 8, 5, 2)
-Hydra = enemy("Hydra", 104, 1800, 14, 10, 4)
+Orc = weak_enemy("Orc", 10, 50, 8, 10, 1)
+Crab = weak_enemy("Crab", 32, 200, 7, 9, 0)
+Bugbear = weak_enemy("Bugbear", 38, 450, 13, 10, 2)
+Faerie = weak_enemy("Faerie", 10, 100, 5, 8, 1)
+
+Arch_Mage = mid_enemy("Arch Mage", 99, 8400, 9 , 15, 3)
+Chimera = mid_enemy("Chimera", 104, 1800, 14, 15, 3)
+Great_Ogre = mid_enemy("Great Ogre", 73, 1100, 8, 5, 2)
+Dire_Wolf = mid_enemy("Dire Wolf", 150, 2900, 10, 10, 2)
+Drider = mid_enemy("Drider", 123, 2300, 10, 9, 1)
+Frost_Giant= mid_enemy("Frost Giant", 138, 3900, 15, 13, 3)
+Hydra = mid_enemy("Hydra", 104, 1800, 14, 10, 4)
+
+Dragon = weak_enemy("Dragon", 406, 120000, 17, 16, 3)
+
+
+
 
 
 Sword = Weapon("Sword", 8)
@@ -49,23 +67,23 @@ HP = 25
 EXP = 0
 	
 def fight():
-	randIndex = random.randrange(len(enemy.options))
-	rand_enemy = enemy.options[randIndex]
-	print("You've encountered a " + rand_enemy.type + "!\n")
+	randIndex = random.randrange(len(weak_enemy.options))
+	rand_weak_enemy = weak_enemy.options[randIndex]
+	print("You've encountered a " + rand_weak_enemy.type + "!\n")
 	def Attack(Weapon):
-		nonlocal rand_enemy
+		nonlocal rand_weak_enemy
 		global player_char
-		while rand_enemy.hp > 0:
+		while rand_weak_enemy.hp > 0:
 			print("What would you like to do?\na: Attack\nb: Run\n")
 			attack_choice = input()
 			if attack_choice == "a":
 				roll20 = random.randint(0, 20)
-				print("Attack:" + str(roll20) +"\nEnemy AC: " + str(rand_enemy.ac) + "\n")
-				if (roll20 + player_char.MOD) > rand_enemy.ac:
+				print("Attack:" + str(roll20) +"\nweak_enemy AC: " + str(rand_weak_enemy.ac) + "\n")
+				if (roll20 + player_char.MOD) > rand_weak_enemy.ac:
 					print("The attack hits!")
 					damage = random.randint(0, WEAPON.Damage) + player_char.MOD
-					rand_enemy.hp = rand_enemy.hp - damage
-					print(rand_enemy.hp)
+					rand_weak_enemy.hp = rand_weak_enemy.hp - damage
+					print(rand_weak_enemy.hp)
 					attack_choice = None
 				else:
 					print("The attack misses!")
@@ -73,8 +91,8 @@ def fight():
 			    return 0
 			else:
 			    print("Usage: type a or b and press enter\n")
-		print("EXP gained: " + str(rand_enemy.exp))
-		return rand_enemy.exp
+		print("EXP gained: " + str(rand_weak_enemy.exp))
+		return rand_weak_enemy.exp
 	global EXP
 	exp = Attack(WEAPON)
 	EXP = EXP + exp
