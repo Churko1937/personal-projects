@@ -1,70 +1,8 @@
 import random
-
-class Weapon:
-	def __init__(Weapon, Type, Damage):
-		Weapon.Type = Type
-		Weapon.Damage = Damage
-		
-class PC:
-	def __init__(pc, Race, Class, Mod, HP, exp):
-		pc.Race = Race
-		pc.Class = Class
-		pc.Mod = Mod
-		pc.HP = HP
-		pc.exp = exp
-		
-class weak_enemy:
-	options = []
-	def __init__(weak_enemy, type, hp, exp, ac, weapon, bonus):
-		weak_enemy.type = type
-		weak_enemy.hp = hp
-		weak_enemy.exp = exp
-		weak_enemy.ac = ac
-		weak_enemy.weapon = weapon
-		weak_enemy.bonus = bonus
-		__class__.options.append(weak_enemy)
-
-class mid_enemy:
-	options = []
-	def __init__(mid_enemy, type, hp, exp, ac, weapon, bonus):
-		mid_enemy.type = type
-		mid_enemy.hp = hp
-		mid_enemy.exp = exp
-		mid_enemy.ac = ac
-		mid_enemy.weapon = weapon
-		mid_enemy.bonus = bonus
-		__class__.options.append(mid_enemy)
-
-
-		
-Orc = weak_enemy("Orc", 10, 50, 8, 10, 1)
-Crab = weak_enemy("Crab", 32, 200, 7, 9, 0)
-Bugbear = weak_enemy("Bugbear", 38, 450, 13, 10, 2)
-Faerie = weak_enemy("Faerie", 10, 100, 5, 8, 1)
-
-Arch_Mage = mid_enemy("Arch Mage", 99, 8400, 9 , 15, 3)
-Chimera = mid_enemy("Chimera", 104, 1800, 14, 15, 3)
-Great_Ogre = mid_enemy("Great Ogre", 73, 1100, 8, 5, 2)
-Dire_Wolf = mid_enemy("Dire Wolf", 150, 2900, 10, 10, 2)
-Drider = mid_enemy("Drider", 123, 2300, 10, 9, 1)
-Frost_Giant= mid_enemy("Frost Giant", 138, 3900, 15, 13, 3)
-Hydra = mid_enemy("Hydra", 104, 1800, 14, 10, 4)
-
-Dragon = weak_enemy("Dragon", 406, 120000, 17, 16, 3)
+from Classes import *
 
 
 
-
-
-Sword = Weapon("Sword", 8)
-Bow = Weapon("Bow", 8)
-Great_Axe = Weapon("Great Axe", 12)
-Scimitar = Weapon("Scimitar", 6)
-
-LEVEL = 1
-MOD = 2
-HP = 25
-EXP = 0
 	
 def fight():
 	randIndex = random.randrange(len(weak_enemy.options))
@@ -92,21 +30,24 @@ def fight():
 			else:
 			    print("Usage: type a or b and press enter\n")
 		print("EXP gained: " + str(rand_weak_enemy.exp))
+		
 		return rand_weak_enemy.exp
 	global EXP
 	exp = Attack(WEAPON)
 	EXP = EXP + exp
+	global LEVEL
+	LEVEL = level()
 	print("Current EXP = " + str(EXP))
 	
 	
 def weapon_select():
-	weapon = input("Choose your weapon(type --help for options) :")
+	weapon = input("Choose your weapon(type --help for options) :\n")
 	if weapon == "--help":
 		print("Sword\nBow\nGreat Axe\nScimitar\n")
 		weapon_select()
 	elif weapon == "Sword":
-	    weapon = Sword
-	    return weapon
+	     weapon = Sword
+	     return weapon
 	elif weapon == "Bow":
 	    weapon = Bow
 	    return weapon
@@ -122,7 +63,7 @@ def weapon_select():
 		
 	
 def class_select():
-	Class = input("Choose your class(type --help for options) :")
+	Class = input("Choose your class(type --help for options) :\n")
 	if Class == "--help":
 		print("Fighter\nPaladin\nWizard\nRanger\n")
 		class_select()
@@ -133,7 +74,7 @@ def class_select():
 		class_select()
 		
 def race_select():
-	race = input("Choose your race(type --help for options) :")
+	race = input("Choose your race(type --help for options) :\n")
 	if race == "--help":
 		print("Orc\nHuman\nDwarf\nElf\n")
 		race_select()
@@ -159,8 +100,50 @@ def choice():
 		choice()
 
 	choice()
-	
-	
+
+def level():
+	global LEVEL
+	global thresh
+	global EXP
+	thresh = level_dict[LEVEL]
+	if EXP > thresh:
+		LEVEL = LEVEL + 1
+		print("Level Up! You are now level " + str(LEVEL) + "!")
+		return LEVEL
+		
+	else:
+		return LEVEL
+
+Orc = weak_enemy("Orc", 15, 100, 13, 5, 12, 3) 
+Crab = weak_enemy("Crab", 2, 10, 11, 0, 1, 1)
+Bugbear = weak_enemy("Bugbear", 27, 200, 16, 4, 16, 2)
+Faerie = weak_enemy("Faerie", 10, 100, 5, 1, 6, 1)
+Giant_bat = weak_enemy("Giant Bat", 22, 50, 13, 4, 6, 2)
+Dire_Wolf = weak_enemy("Dire Wolf", 37, 200, 14, 5, 12, 3)
+
+Arch_Mage = mid_enemy("Arch Mage", 99, 8400, 12, 6, 4, 2)
+Chimera = mid_enemy("Chimera", 114, 2300, 14, 7, 12, 4)
+#Great_Ogre = mid_enemy("Great Ogre", 73, 1100, 8, 5, 2)
+Drider = mid_enemy("Drider", 123, 2300, 19, 6, 16, 0)
+Frost_Giant= mid_enemy("Frost Giant", 138, 3900, 15, 9, 36, 6)
+Hydra = mid_enemy("Hydra", 172, 3900, 15, 8, 10, 5)
+
+Vampire = strong_enemy("Vampire", 144, 10000, 16, 9, 8, 4)
+Iron_Golem = strong_enemy("Iron Golem", 210, 15000, 20, 13, 24, 7)
+#Dragon = strong_enemy("Dragon", 406, 120000, 17, 16, 3)
+
+Sword = Weapon("Sword", 8)
+Bow = Weapon("Bow", 8)
+Great_Axe = Weapon("Great Axe", 12)
+Scimitar = Weapon("Scimitar", 6)
+
+level_dict = {1:300, 2:900, 3:2700, 4:6500, 5:14000, 6:23000, 7:34000, 8:48000, 9:64000, 10:85000, 11:100000, 12:120000, 13:140000, 14:165000, 15:195000, 16:225000, 17:265000, 18:305000, 19:355000}	
+thresh = 0
+LEVEL = 1
+MOD = 2
+HP = 25
+EXP = 0
+
 pc_race = race_select()
 pc_class = class_select()
 				
@@ -177,5 +160,5 @@ player_char.EXP = EXP
 print(player_char.Race)
 WEAPON = weapon_select()
 choice()
-	
+
 	
