@@ -1,6 +1,6 @@
 import random
 from Classes import *
-
+import pickle
 
 
 	
@@ -84,7 +84,7 @@ def race_select():
 		print("Selection unacceptable please try again\n")
 		race_select()
 	
-		
+	#choose to fight or quit. if quit then save PC class and Weapon class to output files and quits program	
 def choice():
 	print("What would you like to do?\n")
 	print("a: Fight\nb: Quit\n")
@@ -93,6 +93,11 @@ def choice():
 		fight()
 		choice()
 	elif selection == "b":
+		global player_char
+		with open('dndsave.pkl', 'wb') as output:
+			pickle.dump(player_char, output, pickle.HIGHEST_PROTOCOL)
+		with open("weaponsave.pkl", "wb") as weapon:
+			pickle.dump(WEAPON, weapon, pickle.HIGHEST_PROTOCOL)
 		print("Rest and recover hero, for glory still awaits...")
 		quit()
 	else:
@@ -101,6 +106,7 @@ def choice():
 
 	choice()
 
+#compares current EXP to thresh and increments level if thresh is reached
 def level():
 	global LEVEL
 	global thresh
@@ -110,9 +116,31 @@ def level():
 		LEVEL = LEVEL + 1
 		print("Level Up! You are now level " + str(LEVEL) + "!")
 		return LEVEL
-		
 	else:
 		return LEVEL
+
+#loads class file from previous saved game or starts a new game. 
+def startup():
+	global player_char
+	print("Welcome Hero! Glory and adventure awaits you!\n")
+	game = input("would you like to a) continue  or b) Start new game?\n")
+	if game != "a" and game != "b":
+		print("Usage: enter a or b")
+		startup()
+	elif game == "a":
+		with open('dndsave.pkl', 'rb') as inp:
+			player_char = pickle.load(inp)
+			return player_char
+	else:
+		return False
+#weaponup function implementation needs to be thought out. Currently don't have a place to call it
+def weaponup():
+	global WEAPON
+	with open("weaponsave.pkl", "rb") as inp:
+		WEAPON = pickle.load(inp)
+		return WEAPON
+
+
 
 Orc = weak_enemy("Orc", 15, 100, 13, 5, 12, 3) 
 Crab = weak_enemy("Crab", 2, 10, 11, 0, 1, 1)
@@ -139,26 +167,33 @@ Scimitar = Weapon("Scimitar", 6)
 
 level_dict = {1:300, 2:900, 3:2700, 4:6500, 5:14000, 6:23000, 7:34000, 8:48000, 9:64000, 10:85000, 11:100000, 12:120000, 13:140000, 14:165000, 15:195000, 16:225000, 17:265000, 18:305000, 19:355000}	
 thresh = 0
+
 LEVEL = 1
 MOD = 2
 HP = 25
 EXP = 0
 
-pc_race = race_select()
-pc_class = class_select()
-				
+player_char = startup()
+WEAPON = weaponup()
+if not player_char:
+	pc_race = race_select()
+	pc_class = class_select()
+	WEAPON = weapon_select()
+	player_char = PC(pc_race, pc_class, MOD, HP, EXP, WEAPON)	
+	pc_name = input("What be your name brave hero?\n")
+	player_char.Race = pc_race
+	player_char.Class = pc_class
+	player_char.MOD = MOD
+	player_char.HP = HP
+	player_char.EXP = EXP
+pc_name = input("What be your name brave hero?\n")					
 print("Welcome Hero! Glory and adventure awaits you!\n")
-pc_name = input("What be your name brave hero?\n")
-print("Congratulations " + pc_name + ". You are a(n) " +pc_race + " " + pc_class + "!\n")
-player_char = PC(pc_race, pc_class, MOD, HP, EXP)
-player_char.Race = pc_race
-player_char.Class = pc_class
-player_char.MOD = MOD
-player_char.HP = HP
-player_char.EXP = EXP
+print("Congratulations " + pc_name + ". You are a(n) " +player_char.Race + " " + player_char.Class + "!\n")
+
+
 
 print(player_char.Race)
-WEAPON = weapon_select()
+
 choice()
 
 	
