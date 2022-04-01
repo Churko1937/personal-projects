@@ -11,6 +11,7 @@ def fight():
 	def Attack(Weapon):
 		nonlocal rand_weak_enemy
 		global player_char
+		global WEAPON
 		while rand_weak_enemy.hp > 0:
 			print("What would you like to do?\na: Attack\nb: Run\n")
 			attack_choice = input()
@@ -35,6 +36,7 @@ def fight():
 	global EXP
 	exp = Attack(WEAPON)
 	EXP = EXP + exp
+	player_char.exp = EXP
 	global LEVEL
 	LEVEL = level()
 	print("Current EXP = " + str(EXP))
@@ -106,7 +108,7 @@ def choice():
 
 	choice()
 
-#compares current EXP to thresh and increments level if thresh is reached
+#compares current EXP to thresh and increments level if thresh is reached and sets next level thresh
 def level():
 	global LEVEL
 	global thresh
@@ -114,6 +116,7 @@ def level():
 	thresh = level_dict[LEVEL]
 	if EXP > thresh:
 		LEVEL = LEVEL + 1
+		player_char.Level = LEVEL
 		print("Level Up! You are now level " + str(LEVEL) + "!")
 		return LEVEL
 	else:
@@ -133,12 +136,15 @@ def startup():
 			return player_char
 	else:
 		return False
-#weaponup function implementation needs to be thought out. Currently don't have a place to call it
+#weapon damage is not being saved, similar problem to level and exp in player_char. Maybe an integer thing?
 def weaponup():
 	global WEAPON
-	with open("weaponsave.pkl", "rb") as inp:
-		WEAPON = pickle.load(inp)
-		return WEAPON
+	if WEAPON == None:
+		return
+	else:
+		with open("weaponsave.pkl", "rb") as inp:
+			WEAPON = pickle.load(inp)
+			return WEAPON
 
 
 
@@ -168,27 +174,32 @@ Scimitar = Weapon("Scimitar", 6)
 level_dict = {1:300, 2:900, 3:2700, 4:6500, 5:14000, 6:23000, 7:34000, 8:48000, 9:64000, 10:85000, 11:100000, 12:120000, 13:140000, 14:165000, 15:195000, 16:225000, 17:265000, 18:305000, 19:355000}	
 thresh = 0
 
-LEVEL = 1
+LEVEL: int = 1
 MOD = 2
 HP = 25
-EXP = 0
-
+EXP: int = 0
+WEAPON = 0
 player_char = startup()
 WEAPON = weaponup()
+
 if not player_char:
 	pc_race = race_select()
 	pc_class = class_select()
 	WEAPON = weapon_select()
-	player_char = PC(pc_race, pc_class, MOD, HP, EXP, WEAPON)	
-	pc_name = input("What be your name brave hero?\n")
+	NAME = input("What be your name brave hero?\n")
+	player_char = PC(pc_race, pc_class, MOD, HP, EXP, WEAPON, LEVEL, NAME)	
+	player_char.Name = NAME
+	player_char.Level = LEVEL
 	player_char.Race = pc_race
 	player_char.Class = pc_class
 	player_char.MOD = MOD
 	player_char.HP = HP
 	player_char.EXP = EXP
-pc_name = input("What be your name brave hero?\n")					
+
+					
 print("Welcome Hero! Glory and adventure awaits you!\n")
-print("Congratulations " + pc_name + ". You are a(n) " +player_char.Race + " " + player_char.Class + "!\n")
+print("Congratulations " + player_char.Name + ". You are a(n) " +player_char.Race + " " + player_char.Class + "!\n")
+print("You are currently level " + str(LEVEL) + " EXP: " + str(EXP))
 
 
 

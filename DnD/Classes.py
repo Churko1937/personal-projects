@@ -4,13 +4,15 @@ class Weapon:
 		Weapon.Damage = Damage
 		
 class PC:
-	def __init__(pc, Race, Class, Mod, HP, exp, WEAPON):
+	def __init__(pc, Race, Class, Mod, HP, exp: int, WEAPON, LEVEL: int, NAME):
 		pc.Race = Race
 		pc.Class = Class
 		pc.Mod = Mod
 		pc.HP = HP
 		pc.exp = exp
 		pc.weapon = WEAPON
+		pc.Level = LEVEL
+		pc.Name = NAME
 
 class weak_enemy:
 	options = []
