@@ -23,6 +23,7 @@ class weak_enemy:
 		weak_enemy.ac = ac
 		weak_enemy.weapon = weapon
 		weak_enemy.bonus = bonus
+		weak_enemy.hitmod = hitmod
 		__class__.options.append(weak_enemy)
 
 class mid_enemy:

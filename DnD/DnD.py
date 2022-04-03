@@ -17,15 +17,16 @@ def fight():
 			attack_choice = input()
 			if attack_choice == "a":
 				roll20 = random.randint(0, 20)
-				print("Attack:" + str(roll20) +"\nweak_enemy AC: " + str(rand_weak_enemy.ac) + "\n")
-				if (roll20 + player_char.MOD) > rand_weak_enemy.ac:
+				print("Attack:" + str(roll20 + player_char.Mod) +"\nEnemy AC: " + str(rand_weak_enemy.ac) + "\n")
+				if (roll20 + player_char.Mod) > rand_weak_enemy.ac:
 					print("The attack hits!")
-					damage = random.randint(0, WEAPON.Damage) + player_char.MOD
+					damage = random.randint(0, WEAPON.Damage) + player_char.Mod
 					rand_weak_enemy.hp = rand_weak_enemy.hp - damage
 					print(rand_weak_enemy.hp)
 					attack_choice = None
 				else:
 					print("The attack misses!")
+					
 			elif attack_choice == "b":
 			    return 0
 			else:
@@ -33,13 +34,11 @@ def fight():
 		print("EXP gained: " + str(rand_weak_enemy.exp))
 		
 		return rand_weak_enemy.exp
-	global EXP
 	exp = Attack(WEAPON)
-	EXP = EXP + exp
-	player_char.exp = EXP
+	player_char.exp = player_char.exp + exp
 	global LEVEL
 	LEVEL = level()
-	print("Current EXP = " + str(EXP))
+	print("Current EXP = " + str(player_char.exp))
 	
 	
 def weapon_select():
@@ -96,6 +95,7 @@ def choice():
 		choice()
 	elif selection == "b":
 		global player_char
+		global WEAPON
 		with open('dndsave.pkl', 'wb') as output:
 			pickle.dump(player_char, output, pickle.HIGHEST_PROTOCOL)
 		with open("weaponsave.pkl", "wb") as weapon:
@@ -108,19 +108,17 @@ def choice():
 
 	choice()
 
-#compares current EXP to thresh and increments level if thresh is reached and sets next level thresh
+#compares current player exp to threshold and increments level if thresh is reached and sets next level threshold
 def level():
-	global LEVEL
+	global player_char
 	global thresh
-	global EXP
-	thresh = level_dict[LEVEL]
-	if EXP > thresh:
-		LEVEL = LEVEL + 1
-		player_char.Level = LEVEL
-		print("Level Up! You are now level " + str(LEVEL) + "!")
-		return LEVEL
+	thresh = level_dict[player_char.Level]
+	if player_char.exp > thresh:
+		player_char.Level = player_char.Level + 1
+		print("Level Up! You are now level " + str(player_char.Level) + "!")
+		return player_char.Level
 	else:
-		return LEVEL
+		return player_char.Level
 
 #loads class file from previous saved game or starts a new game. 
 def startup():
@@ -136,17 +134,15 @@ def startup():
 			return player_char
 	else:
 		return False
-#weapon damage is not being saved, similar problem to level and exp in player_char. Maybe an integer thing?
+
 def weaponup():
-	global WEAPON
-	if WEAPON == None:
-		return
-	else:
+	try:
+		global WEAPON
 		with open("weaponsave.pkl", "rb") as inp:
 			WEAPON = pickle.load(inp)
 			return WEAPON
-
-
+	except FileNotFoundError:
+		return False
 
 Orc = weak_enemy("Orc", 15, 100, 13, 5, 12, 3) 
 Crab = weak_enemy("Crab", 2, 10, 11, 0, 1, 1)
@@ -174,11 +170,11 @@ Scimitar = Weapon("Scimitar", 6)
 level_dict = {1:300, 2:900, 3:2700, 4:6500, 5:14000, 6:23000, 7:34000, 8:48000, 9:64000, 10:85000, 11:100000, 12:120000, 13:140000, 14:165000, 15:195000, 16:225000, 17:265000, 18:305000, 19:355000}	
 thresh = 0
 
-LEVEL: int = 1
-MOD = 2
-HP = 25
-EXP: int = 0
-WEAPON = 0
+
+newLEVEL: int = 1
+newMOD = 2
+newHP = 25
+newEXP: int = 0
 player_char = startup()
 WEAPON = weaponup()
 
@@ -187,24 +183,21 @@ if not player_char:
 	pc_class = class_select()
 	WEAPON = weapon_select()
 	NAME = input("What be your name brave hero?\n")
-	player_char = PC(pc_race, pc_class, MOD, HP, EXP, WEAPON, LEVEL, NAME)	
+	player_char = PC(pc_race, pc_class, newMOD, newHP, newEXP, WEAPON, newLEVEL, NAME)	
 	player_char.Name = NAME
-	player_char.Level = LEVEL
+	player_char.Level = newLEVEL
 	player_char.Race = pc_race
 	player_char.Class = pc_class
-	player_char.MOD = MOD
-	player_char.HP = HP
-	player_char.EXP = EXP
+	player_char.Mod = newMOD
+	player_char.HP = newHP
+	player_char.exp = newEXP
+
+	
 
 					
 print("Welcome Hero! Glory and adventure awaits you!\n")
 print("Congratulations " + player_char.Name + ". You are a(n) " +player_char.Race + " " + player_char.Class + "!\n")
-print("You are currently level " + str(LEVEL) + " EXP: " + str(EXP))
-
-
-
-print(player_char.Race)
-
+print("You are currently level " + str(player_char.Level) + " EXP: " + str(player_char.exp))
 choice()
 
 	
