@@ -1,39 +1,62 @@
-import random
+import random, pickle, time
 from Classes import *
-import pickle
 
 
-	
+
+# //TODO Need to include Mid enemies and strong enemies here. Have Attack function take another arguemnt for enemy type, test this in a separate window. If statement checking player_char.Level	
 def fight():
-	randIndex = random.randrange(len(weak_enemy.options))
-	rand_weak_enemy = weak_enemy.options[randIndex]
-	print("You've encountered a " + rand_weak_enemy.type + "!\n")
-	def Attack(Weapon):
-		nonlocal rand_weak_enemy
+	global player_char
+	if player_char.Level < 4:
+		randIndex = random.randrange(len(weak_enemy.options))
+		enemy = weak_enemy.options[randIndex]
+	elif player_char.Level < 11 and player_char.Level >= 4:
+		randIndex = random.randrange(len(mid_enemy.options))
+		enemy = mid_enemy.options[randIndex]
+	else:
+		randIndex = random.randrange(len(strong_enemy.options))
+		enemy = strong_enemy.optins[randIndex]
+	print("You've encountered a " + enemy.type + "!\n")
+	def Attack(Weapon): 
+		nonlocal enemy		
 		global player_char
 		global WEAPON
-		while rand_weak_enemy.hp > 0:
+		while enemy.hp > 0:
 			print("What would you like to do?\na: Attack\nb: Run\n")
 			attack_choice = input()
 			if attack_choice == "a":
 				roll20 = random.randint(0, 20)
-				print("Attack:" + str(roll20 + player_char.Mod) +"\nEnemy AC: " + str(rand_weak_enemy.ac) + "\n")
-				if (roll20 + player_char.Mod) > rand_weak_enemy.ac:
+				enemyroll = random.randint(0, 20)
+				print("Attack:" + str(roll20 + player_char.Mod) +"\nEnemy AC: " + str(enemy.ac) + "\n")
+				if (roll20 + player_char.Mod) > enemy.ac:
 					print("The attack hits!")
 					damage = random.randint(0, WEAPON.Damage) + player_char.Mod
-					rand_weak_enemy.hp = rand_weak_enemy.hp - damage
-					print(rand_weak_enemy.hp)
+					enemy.hp = enemy.hp - damage
+					print(enemy.hp)
+					#sleep(3)
+					#if (enemyroll + enemy.hitmod) > player_char.ac:
+					#	print("The enemy attack hits!\n")
+					#	enemydamage = random.randint(1, enemy.weapon)
+					#	player_char.HP = player_char.HP - enemydamage                       #commented out because player_char does not currently have an "ac" attribute
+					#else:
+					#	print("The enemy attack misses!\n")
 					attack_choice = None
 				else:
 					print("The attack misses!")
+					#if (enemyroll + enemy.hitmod) > player_char.ac:
+					#	print("The enemy attack hits!\n")
+					#	enemydamage = random.randint(1, enemy.weapon)
+					#	player_char.HP = player_char.HP - enemydamage
+					#else:
+					#	print("The enemy attack misses!\n")
 					
 			elif attack_choice == "b":
 			    return 0
 			else:
 			    print("Usage: type a or b and press enter\n")
-		print("EXP gained: " + str(rand_weak_enemy.exp))
+		print("EXP gained: " + str(enemy.exp))
+		print("Current HP: " + str(player_char.HP))
 		
-		return rand_weak_enemy.exp
+		return enemy.exp
 	exp = Attack(WEAPON)
 	player_char.exp = player_char.exp + exp
 	global LEVEL
@@ -120,21 +143,26 @@ def level():
 	else:
 		return player_char.Level
 
-#loads class file from previous saved game or starts a new game. 
+#loads class file from previous saved game or starts a new game. If no saved game exists, start a new game.
 def startup():
-	global player_char
-	print("Welcome Hero! Glory and adventure awaits you!\n")
-	game = input("would you like to a) continue  or b) Start new game?\n")
-	if game != "a" and game != "b":
-		print("Usage: enter a or b")
-		startup()
-	elif game == "a":
-		with open('dndsave.pkl', 'rb') as inp:
-			player_char = pickle.load(inp)
-			return player_char
-	else:
+	try:
+		global player_char
+		print("Welcome Hero! Glory and adventure awaits you!\n")
+		game = input("would you like to a) continue  or b) Start new game?\n")
+		if game != "a" and game != "b":
+			print("Usage: enter a or b")
+			startup()
+		elif game == "a":
+			with open('dndsave.pkl', 'rb') as inp:
+				player_char = pickle.load(inp)
+				return player_char
+		else:
+			return False
+	except FileNotFoundError:
+		print("No saved game found. Starting new game.")
 		return False
 
+#loads weapon class from pervious game, if no game save exists return false
 def weaponup():
 	try:
 		global WEAPON
@@ -144,6 +172,9 @@ def weaponup():
 	except FileNotFoundError:
 		return False
 
+
+
+#type, hp, exp, ac, hitmod, weapon, bonus
 Orc = weak_enemy("Orc", 15, 100, 13, 5, 12, 3) 
 Crab = weak_enemy("Crab", 2, 10, 11, 0, 1, 1)
 Bugbear = weak_enemy("Bugbear", 27, 200, 16, 4, 16, 2)
@@ -171,12 +202,16 @@ level_dict = {1:300, 2:900, 3:2700, 4:6500, 5:14000, 6:23000, 7:34000, 8:48000, 
 thresh = 0
 
 
+		
+
 newLEVEL: int = 1
 newMOD = 2
 newHP = 25
 newEXP: int = 0
 player_char = startup()
 WEAPON = weaponup()
+
+
 
 if not player_char:
 	pc_race = race_select()
@@ -192,7 +227,16 @@ if not player_char:
 	player_char.HP = newHP
 	player_char.exp = newEXP
 
-	
+if player_char.Level >= 5 and player_char.Level < 9:
+	player_char.Mod = 3
+elif player_char.Level >= 9 and player_char.Level < 13:
+	player_char.Mod = 4
+elif player_char.Level >= 13 and player_char.Level < 17:
+	player_char.Mod = 5
+elif player_char.Level >= 17:
+	player_char.Mod = 6
+else:
+	player_char.Mod = 2	
 
 					
 print("Welcome Hero! Glory and adventure awaits you!\n")

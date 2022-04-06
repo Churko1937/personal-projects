@@ -35,6 +35,7 @@ class mid_enemy:
 		mid_enemy.ac = ac
 		mid_enemy.weapon = weapon
 		mid_enemy.bonus = bonus
+		mid_enemy.hitmod = hitmod
 		__class__.options.append(mid_enemy)
 
 class strong_enemy:
@@ -46,4 +47,5 @@ class strong_enemy:
 		strong_enemy.ac = ac
 		strong_enemy.weapon = weapon
 		strong_enemy.bonus = bonus
+		strong_enemy.hitmod = hitmod
 		__class__.options.append(strong_enemy)
