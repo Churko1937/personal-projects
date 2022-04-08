@@ -1,6 +1,6 @@
-import random, pickle
+import random, pickle, time
 from Classes import *
-import time
+from os.path import exists
 
 
 
@@ -58,7 +58,7 @@ def fight():
 						print("The enemy attack misses!\n")
 					
 			elif attack_choice == "b":
-			    return 0
+			    choice()
 			else:
 			    print("Usage: type a or b and press enter\n")
 		if enemy.hp <= 0:
@@ -139,7 +139,7 @@ def race_select():
 	#choose to fight or quit. if quit then save PC class and Weapon class to output files and quits program	
 def choice():
 	print("What would you like to do?\n")
-	print("a: Fight\nb: Quit\n")
+	print("a: Fight\nb: Quit\nc: items")
 	selection = input()
 	if selection == "a":
 		fight()
@@ -151,8 +151,13 @@ def choice():
 			pickle.dump(player_char, output, pickle.HIGHEST_PROTOCOL)
 		with open("weaponsave.pkl", "wb") as weapon:
 			pickle.dump(WEAPON, weapon, pickle.HIGHEST_PROTOCOL)
+		with open("itemsave.pkl", "wb") as item:
+			pickle.dump([item_hp, item_mana], item, pickle.HIGHEST_PROTOCOL)
+		
 		print("Rest and recover hero, for glory still awaits...")
 		quit()
+	elif selection == "c":
+		items()
 	else:
 		print("Usage: type a or b and hit enter")
 		choice()
@@ -175,6 +180,8 @@ def level():
 def startup():
 	try:
 		global player_char
+		global item_hp
+		global item_mana
 		print("Welcome Hero! Glory and adventure awaits you!\n")
 		game = input("would you like to a) continue  or b) Start new game?\n")
 		if game != "a" and game != "b":
@@ -183,12 +190,15 @@ def startup():
 		elif game == "a":
 			with open('dndsave.pkl', 'rb') as inp:
 				player_char = pickle.load(inp)
-				return player_char
+			with open('itemsave.pkl', 'rb') as item:
+				item_hp, item_mana = pickle.load(item)
+				
+				return player_char, item_hp, item_mana 
 		else:
-			return False
+			return False, 0, 0
 	except FileNotFoundError:
 		print("No saved game found. Starting new game.")
-		return False
+		return False, 0, 0
 
 #loads weapon class from pervious game, if no game save exists return false
 def weaponup():
@@ -199,6 +209,58 @@ def weaponup():
 			return WEAPON
 	except FileNotFoundError:
 		return False
+
+def items():		
+	def item_choice():
+		global newitem_hp
+		global newitem_mana
+		global item_hp
+		global item_mana
+		print("You have " + str(item_hp) + " health potion(s)\nYou have " + str(item_mana) + " mana potion(s)")
+		print("What would you like to do?\n")
+		print("a: consume health potion\n b: consume mana potion\n c: exit\n")
+		pick = input()
+		if pick == "a":
+			global player_char
+			if item_hp > 0:
+				player_char.HP = player_char.maxHP
+				item_hp = item_hp - 1
+				print("You feel refreshed!")
+				time.sleep(1)
+				choice()
+			else:
+				print("You do not have any health potions to consume.\n")
+				choice()
+		elif pick == "b":
+			if item_mana > 0:
+				player_char.mana = player_char.maxmana
+				item_mana = item_mana - 1
+				print("Your power is retored!")
+				time.sleep(1)
+				choice()
+			else:
+				print("You have no mana potions to consume.\n")
+				time.sleep(1)
+				choice()
+		elif pick == "c":
+			choice()
+		else:
+			print("Usage: type a, b or c")
+			items()
+	if exists("itemsave.pkl"):
+		item_choice()
+	else:
+		global newitem_hp
+		global newitem_mana
+		global item_hp
+		global item_mana
+		item_hp = newitem_hp
+		item_mana = newitem_mana
+		item_choice()
+			
+
+
+	
 
 
 
@@ -230,13 +292,16 @@ level_dict = {1:300, 2:900, 3:2700, 4:6500, 5:14000, 6:23000, 7:34000, 8:48000, 
 thresh = 0
 
 
-		
-
+newitem_hp = 1		
+newitem_mana = 1
 newLEVEL: int = 1
 newMOD = 2
 newHP = 25
+newHPmax = 25
+newmana = 25
+newmanamax = 25
 newEXP: int = 0
-player_char = startup()
+player_char, item_hp, item_mana = startup()
 WEAPON = weaponup()
 
 
@@ -247,13 +312,16 @@ if not player_char:
 	ac = 15
 	WEAPON = weapon_select()
 	NAME = input("What be your name brave hero?\n")
-	player_char = PC(pc_race, pc_class, newMOD, newHP, newEXP, WEAPON, newLEVEL, NAME, ac)	
+	player_char = PC(pc_race, pc_class, newMOD, newHP, newHPmax, newmana, newmanamax, newEXP, WEAPON, newLEVEL, NAME, ac)	
 	player_char.Name = NAME
 	player_char.Level = newLEVEL
 	player_char.Race = pc_race
 	player_char.Class = pc_class
 	player_char.Mod = newMOD
 	player_char.HP = newHP
+	player_char.maxHP = newHPmax
+	player_char.mana = newmana
+	player_char.maxmana = newmanamax
 	player_char.exp = newEXP
 	player_char.ac = ac
 

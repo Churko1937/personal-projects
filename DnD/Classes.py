@@ -1,14 +1,20 @@
+from ctypes.wintypes import MAX_PATH
+
+
 class Weapon:
 	def __init__(Weapon, Type, Damage):
 		Weapon.Type = Type
 		Weapon.Damage = Damage
 		
 class PC:
-	def __init__(pc, Race, Class, Mod, HP, exp: int, WEAPON, LEVEL: int, NAME, AC):
+	def __init__(pc, Race, Class, Mod, HP, maxHP, mana, maxmana, exp: int, WEAPON, LEVEL: int, NAME, AC):
 		pc.Race = Race
 		pc.Class = Class
 		pc.Mod = Mod
 		pc.HP = HP
+		pc.maxHP = maxHP
+		pc.mana = mana
+		pc.maxmana = maxmana
 		pc.exp = exp
 		pc.weapon = WEAPON
 		pc.Level = LEVEL
